@@ -1,0 +1,48 @@
+spring:
+  main:
+    web-application-type: reactive
+  cloud:
+    discovery:
+      enabled: true
+    gateway:
+      routes:
+        - id: user-account-service
+          uri: lb://chikha-user-account-service
+          predicates:
+            - Path=/api/users/**, /api/auth/login
+          filters:
+            - AddRequestHeader=User-Request, Gateway
+        - id: project-service
+          uri: lb://chikha-project-service
+          predicates:
+            - Path=/api/tasks/**,/api/projects/**, /project-service/**
+          filters:
+            - AddRequestHeader=Project-Request, Gateway
+        - id: user-profile-service
+          uri: lb://chikha-user-profile-service
+          predicates:
+            - Path=/api/user-profiles/**
+          filters:
+            - AddRequestHeader=User-Profile-Request, Gateway
+        - id: subscription-service
+          uri: lb://chikha-subscription-service
+          predicates:
+            - Path=/api/subscriptions/**,/api/user-subscriptions/**
+          filters:
+            - AddRequestHeader=Project-Request, Gateway
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, loggers, metrics, refresh, env
+  endpoint:
+    gateway:
+      enabled: true
+
+code:
+  secret: mAvsZD2KqE2Kv6VpF+VkN1P3PT+2uq5z0g2ZxF0StSc=
+
+logging:
+  level:
+    root: INFO
